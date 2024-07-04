@@ -29,7 +29,7 @@ Server (this would run the server at localhost:7080):
 Client (this would run the server at localhost:1323):
 
 ```bash
-  go run server/main.go
+  go run client/main.go
 ```
 
 ## Generate fake data
