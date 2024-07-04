@@ -1,0 +1,9 @@
+.idea
+
+.env
+
+builds
+
+protos/*.pb.go
+
+*.exe
