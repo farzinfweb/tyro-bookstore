@@ -47,5 +47,6 @@ message BuyResp {
 
 message SearchResp {
   repeated Book result = 1;
+  uint32 totalCount = 2;
 }
 

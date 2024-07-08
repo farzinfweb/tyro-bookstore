@@ -9,6 +9,12 @@ import (
 	"net/http"
 )
 
+type SearchReqParams struct {
+	SearchTerm string `query:"s"`
+	Page       uint32 `query:"page"`
+	PerPage    uint32 `query:"per_page"`
+}
+
 func main() {
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -34,6 +40,22 @@ func main() {
 			return err
 		}
 		return c.JSON(200, buyResp)
+	})
+	e.GET("/books", func(c echo.Context) error {
+		reqParams := new(SearchReqParams)
+		err := c.Bind(reqParams)
+		if err != nil {
+			return err
+		}
+		searchResp, err := client.Search(context.TODO(), &protos.SearchReq{
+			SearchTerm: reqParams.SearchTerm,
+			Page:       reqParams.Page,
+			PerPage:    reqParams.PerPage,
+		})
+		if err != nil {
+			return err
+		}
+		return c.JSON(200, searchResp)
 	})
 	e.Logger.Fatal(e.Start(":1323"))
 }

@@ -5,6 +5,7 @@ import (
 	"bookstore/protos"
 	"context"
 	"github.com/google/uuid"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type BookStoreServer struct {
@@ -29,8 +30,29 @@ func (b BookStoreServer) Buy(ctx context.Context, req *protos.BuyReq) (*protos.B
 }
 
 func (b BookStoreServer) Search(ctx context.Context, req *protos.SearchReq) (*protos.SearchResp, error) {
-	//TODO implement me
-	panic("implement me")
+	books, count, err := b.repo.ListAll(ctx, domain.ListBookStoreParams{
+		SearchTerm: req.SearchTerm,
+		Page:       req.Page,
+		PerPage:    req.PerPage,
+	})
+	if err != nil {
+		return nil, err
+	}
+	var _books = make([]*protos.Book, len(books))
+	for i := 0; i < len(books); i++ {
+		_b := books[i]
+		_books[i] = &protos.Book{
+			Id:        _b.Id,
+			Title:     _b.Title,
+			Author:    _b.Author,
+			Price:     _b.Price,
+			CreatedAt: timestamppb.New(_b.CreatedAt),
+		}
+	}
+	return &protos.SearchResp{
+		Result:     _books,
+		TotalCount: count,
+	}, nil
 }
 
 func NewBookStoreServer(repo domain.IBookRepo) protos.BookstoreServer {
